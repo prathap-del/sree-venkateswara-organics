@@ -2,13 +2,28 @@ from flask import Flask, request, jsonify, send_from_directory, session, redirec
 import sqlite3
 from datetime import datetime
 import os
+import json
+import razorpay
 
 app = Flask(__name__)
 
-app.secret_key = "sree-venkateswara-admin-secret-key"
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "sree-venkateswara-admin-secret-key"
+)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE = os.path.join(BASE_DIR, "orders.db")
+
+RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET")
+
+razorpay_client = None
+
+if RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET:
+    razorpay_client = razorpay.Client(
+        auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET)
+    )
 
 
 def get_db():
@@ -77,9 +92,15 @@ def admin_login_api():
     username = data.get("username", "").strip()
     password = data.get("password", "")
 
-    # Admin credentials
-    ADMIN_USERNAME = "admin"
-    ADMIN_PASSWORD = "Admin@123"
+    ADMIN_USERNAME = os.environ.get(
+        "ADMIN_USERNAME",
+        "admin"
+    )
+
+    ADMIN_PASSWORD = os.environ.get(
+        "ADMIN_PASSWORD",
+        "Admin@123"
+    )
 
     if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
 
@@ -125,11 +146,36 @@ def admin_logout():
 
 
 # =========================
-# CREATE ORDER
+# RAZORPAY KEY
 # =========================
 
-@app.route("/api/orders", methods=["POST"])
-def create_order():
+@app.route("/api/payment-key")
+def payment_key():
+
+    if not RAZORPAY_KEY_ID:
+        return jsonify({
+            "success": False,
+            "message": "Razorpay Key ID is not configured."
+        }), 500
+
+    return jsonify({
+        "success": True,
+        "key_id": RAZORPAY_KEY_ID
+    })
+
+
+# =========================
+# CREATE RAZORPAY ORDER
+# =========================
+
+@app.route("/api/create-payment-order", methods=["POST"])
+def create_payment_order():
+
+    if not razorpay_client:
+        return jsonify({
+            "success": False,
+            "message": "Razorpay is not configured on the server."
+        }), 500
 
     data = request.get_json()
 
@@ -178,49 +224,185 @@ def create_order():
 
     try:
         total = float(total)
-    except:
+    except (TypeError, ValueError):
         return jsonify({
             "success": False,
             "message": "Invalid order total."
         }), 400
 
-    connection = get_db()
+    if total < 1:
+        return jsonify({
+            "success": False,
+            "message": "Invalid payment amount."
+        }), 400
 
-    cursor = connection.execute("""
-        INSERT INTO orders (
+    try:
+
+        # Razorpay amount is in paise.
+        amount_in_paise = int(round(total * 100))
+
+        razorpay_order = razorpay_client.order.create(
+            data={
+                "amount": amount_in_paise,
+                "currency": "INR",
+                "receipt": "svo_" + datetime.now().strftime("%Y%m%d%H%M%S"),
+                "notes": {
+                    "customer_name": customer_name,
+                    "phone": phone
+                }
+            }
+        )
+
+        connection = get_db()
+
+        cursor = connection.execute("""
+            INSERT INTO orders (
+                customer_name,
+                phone,
+                address,
+                pincode,
+                items,
+                total,
+                payment_status,
+                order_status,
+                created_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
             customer_name,
             phone,
             address,
             pincode,
-            items,
+            json.dumps(items),
             total,
-            payment_status,
-            order_status,
-            created_at
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        customer_name,
-        phone,
-        address,
-        pincode,
-        str(items),
-        total,
-        "Pending",
-        "New",
-        datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    ))
+            "Pending",
+            "New",
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        ))
 
-    order_id = cursor.lastrowid
+        local_order_id = cursor.lastrowid
 
-    connection.commit()
-    connection.close()
+        connection.commit()
+        connection.close()
 
-    return jsonify({
-        "success": True,
-        "order_id": order_id,
-        "message": "Order created successfully."
-    })
+        return jsonify({
+            "success": True,
+            "local_order_id": local_order_id,
+            "razorpay_order_id": razorpay_order["id"],
+            "amount": amount_in_paise,
+            "currency": "INR",
+            "key_id": RAZORPAY_KEY_ID
+        })
+
+    except Exception as error:
+
+        print("RAZORPAY ORDER ERROR:", error)
+
+        return jsonify({
+            "success": False,
+            "message": "Unable to create payment order."
+        }), 500
+
+
+# =========================
+# VERIFY RAZORPAY PAYMENT
+# =========================
+
+@app.route("/api/verify-payment", methods=["POST"])
+def verify_payment():
+
+    if not razorpay_client:
+        return jsonify({
+            "success": False,
+            "message": "Razorpay is not configured."
+        }), 500
+
+    data = request.get_json()
+
+    if not data:
+        return jsonify({
+            "success": False,
+            "message": "Payment data missing."
+        }), 400
+
+    razorpay_order_id = data.get(
+        "razorpay_order_id",
+        ""
+    )
+
+    razorpay_payment_id = data.get(
+        "razorpay_payment_id",
+        ""
+    )
+
+    razorpay_signature = data.get(
+        "razorpay_signature",
+        ""
+    )
+
+    local_order_id = data.get(
+        "local_order_id"
+    )
+
+    if not razorpay_order_id:
+        return jsonify({
+            "success": False,
+            "message": "Razorpay order ID missing."
+        }), 400
+
+    if not razorpay_payment_id:
+        return jsonify({
+            "success": False,
+            "message": "Payment ID missing."
+        }), 400
+
+    if not razorpay_signature:
+        return jsonify({
+            "success": False,
+            "message": "Payment signature missing."
+        }), 400
+
+    try:
+
+        # Verify payment signature on the server.
+        razorpay_client.utility.verify_payment_signature({
+            "razorpay_order_id": razorpay_order_id,
+            "razorpay_payment_id": razorpay_payment_id,
+            "razorpay_signature": razorpay_signature
+        })
+
+        connection = get_db()
+
+        if local_order_id:
+            connection.execute("""
+                UPDATE orders
+                SET
+                    payment_status = ?,
+                    order_status = ?
+                WHERE id = ?
+            """, (
+                "Paid",
+                "New",
+                int(local_order_id)
+            ))
+
+        connection.commit()
+        connection.close()
+
+        return jsonify({
+            "success": True,
+            "message": "Payment verified successfully.",
+            "order_id": local_order_id
+        })
+
+    except Exception as error:
+
+        print("PAYMENT VERIFICATION ERROR:", error)
+
+        return jsonify({
+            "success": False,
+            "message": "Payment verification failed."
+        }), 400
 
 
 # =========================
