@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Order Confirmed - Sree Venkateswara Organics
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+
+            font-family: Arial, sans-serif;
+
+            background: #f4f8f3;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            min-height: 100vh;
+
+            text-align: center;
+        }
+
+        .box {
+            width: 90%;
+            max-width: 550px;
+
+            background: white;
+
+            padding: 45px 30px;
+
+            border-radius: 15px;
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .icon {
+            font-size: 65px;
+
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            color: #176b35;
+
+            margin-bottom: 15px;
+        }
+
+        p {
+            color: #555;
+
+            line-height: 1.6;
+        }
+
+        .order-number {
+            margin: 25px 0;
+
+            padding: 15px;
+
+            background: #eef7ef;
+
+            border-radius: 8px;
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            color: #176b35;
+        }
+
+        a {
+            display: inline-block;
+
+            margin-top: 15px;
+
+            padding: 13px 25px;
+
+            background: #176b35;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 7px;
+
+            font-weight: bold;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="box">
+
+    <div class="icon">
+        ✅
+    </div>
+
+
+    <h1>
+        Order Received!
+    </h1>
+
+
+    <p>
+        Thank you for ordering from
+        Sree Venkateswara Organics.
+    </p>
+
+
+    <div
+        class="order-number"
+        id="orderNumber"
+    >
+        Order Number: —
+    </div>
+
+
+    <p>
+        We have received your order details.
+    </p>
+
+
+    <a href="index.html">
+        Continue Shopping
+    </a>
+
+
+</div>
+
+
+<script>
+
+    const parameters =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const order =
+        parameters.get("order");
+
+
+    if (order) {
+
+        document.getElementById(
+            "orderNumber"
+        ).innerText =
+            "Order Number: #" + order;
+
+    }
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Checkout - Sree Venkateswara Organics
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f8f3;
+            color: #222;
+        }
+
+        header {
+            background: #176b35;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 26px;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 950px;
+            margin: 40px auto;
+
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            gap: 25px;
+        }
+
+        .box {
+            background: white;
+            padding: 25px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .box h2 {
+            color: #176b35;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+
+            margin-top: 15px;
+            margin-bottom: 7px;
+
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+
+            padding: 12px;
+
+            border: 1px solid #ccc;
+            border-radius: 6px;
+
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .order-item {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 14px 0;
+
+            border-bottom: 1px solid #ddd;
+        }
+
+        .total {
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-top: 25px;
+
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        .payment {
+            margin-top: 25px;
+
+            padding: 15px;
+
+            background: #f1f8f2;
+
+            border-radius: 7px;
+        }
+
+        .payment p {
+            margin-top: 8px;
+
+            color: #555;
+        }
+
+        .place-order {
+            width: 100%;
+
+            margin-top: 25px;
+
+            padding: 15px;
+
+            border: none;
+            border-radius: 7px;
+
+            background: #176b35;
+            color: white;
+
+            font-size: 17px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .place-order:hover {
+            background: #0d4d24;
+        }
+
+        .back {
+            display: block;
+
+            text-align: center;
+
+            margin-top: 20px;
+
+            color: #176b35;
+
+            text-decoration: none;
+
+            font-weight: bold;
+        }
+
+        .contact {
+            text-align: center;
+
+            margin: 20px;
+
+            color: #555;
+        }
+
+        .contact strong {
+            color: #176b35;
+        }
+
+        .message {
+            margin-top: 15px;
+
+            padding: 12px;
+
+            border-radius: 6px;
+
+            display: none;
+        }
+
+        @media (max-width: 700px) {
+
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 21px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>
+        🌱 Sree Venkateswara Organics
+    </h1>
+
+</header>
+
+
+<div class="container">
+
+
+    <!-- CUSTOMER DETAILS -->
+
+    <div class="box">
+
+        <h2>
+            Customer Details
+        </h2>
+
+
+        <form id="checkoutForm">
+
+
+            <label for="name">
+                Full Name
+            </label>
+
+            <input
+                type="text"
+                id="name"
+                placeholder="Enter your full name"
+                required
+            >
+
+
+            <label for="phone">
+                Mobile Number
+            </label>
+
+            <input
+                type="tel"
+                id="phone"
+                placeholder="10-digit mobile number"
+                maxlength="10"
+                pattern="[0-9]{10}"
+                required
+            >
+
+
+            <label for="address">
+                Delivery Address
+            </label>
+
+            <textarea
+                id="address"
+                placeholder="House number, street, village/town, district, state"
+                required
+            ></textarea>
+
+
+            <label for="pincode">
+                Pincode
+            </label>
+
+            <input
+                type="text"
+                id="pincode"
+                placeholder="6-digit pincode"
+                maxlength="6"
+                pattern="[0-9]{6}"
+                required
+            >
+
+
+            <div class="payment">
+
+                <strong>
+                    💳 Payment Method
+                </strong>
+
+                <p>
+                    Online payment will be connected
+                    after we finish testing the order system.
+                </p>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="place-order"
+                id="submitButton"
+            >
+                Place Order
+            </button>
+
+
+            <div
+                id="message"
+                class="message"
+            ></div>
+
+
+        </form>
+
+
+        <a
+            href="index.html"
+            class="back"
+        >
+            ← Continue Shopping
+        </a>
+
+    </div>
+
+
+    <!-- ORDER SUMMARY -->
+
+    <div class="box">
+
+        <h2>
+            🛒 Order Summary
+        </h2>
+
+        <div id="orderItems"></div>
+
+
+        <div class="total">
+
+            <span>
+                Total
+            </span>
+
+            <span>
+                ₹<span id="orderTotal">0</span>
+            </span>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<div class="contact">
+
+    Need help?
+
+    Contact:
+
+    <strong>
+        6300857062
+    </strong>
+
+</div>
+
+
+<script>
+
+
+/* ============================
+   GET CART
+============================ */
+
+const cart =
+    JSON.parse(
+        localStorage.getItem("cart")
+    ) || [];
+
+
+const orderItems =
+    document.getElementById(
+        "orderItems"
+    );
+
+
+const orderTotal =
+    document.getElementById(
+        "orderTotal"
+    );
+
+
+const message =
+    document.getElementById(
+        "message"
+    );
+
+
+const submitButton =
+    document.getElementById(
+        "submitButton"
+    );
+
+
+let total = 0;
+
+
+/* ============================
+   DISPLAY CART
+============================ */
+
+if (cart.length === 0) {
+
+    orderItems.innerHTML = `
+        <p>
+            Your cart is empty.
+        </p>
+    `;
+
+    submitButton.disabled = true;
+
+    submitButton.style.opacity = "0.5";
+
+} else {
+
+
+    cart.forEach(function(product) {
+
+        const productTotal =
+            Number(product.price) *
+            Number(product.quantity);
+
+
+        total += productTotal;
+
+
+        orderItems.innerHTML += `
+
+            <div class="order-item">
+
+                <div>
+
+                    <strong>
+                        ${product.name}
+                    </strong>
+
+                    <br>
+
+                    Quantity:
+                    ${product.quantity}
+
+                </div>
+
+
+                <strong>
+
+                    ₹${productTotal}
+
+                </strong>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+orderTotal.innerText = total;
+
+
+/* ============================
+   CHECKOUT
+============================ */
+
+document
+    .getElementById("checkoutForm")
+    .addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+
+            if (cart.length === 0) {
+
+                alert(
+                    "Your cart is empty."
+                );
+
+                return;
+
+            }
+
+
+            const name =
+                document
+                    .getElementById("name")
+                    .value
+                    .trim();
+
+
+            const phone =
+                document
+                    .getElementById("phone")
+                    .value
+                    .trim();
+
+
+            const address =
+                document
+                    .getElementById("address")
+                    .value
+                    .trim();
+
+
+            const pincode =
+                document
+                    .getElementById("pincode")
+                    .value
+                    .trim();
+
+
+            /* VALIDATION */
+
+            if (
+                !/^[0-9]{10}$/.test(phone)
+            ) {
+
+                alert(
+                    "Please enter a valid 10-digit mobile number."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !/^[0-9]{6}$/.test(pincode)
+            ) {
+
+                alert(
+                    "Please enter a valid 6-digit pincode."
+                );
+
+                return;
+
+            }
+
+
+            /* DISABLE BUTTON */
+
+            submitButton.disabled = true;
+
+            submitButton.innerText =
+                "Saving Order...";
+
+
+            try {
+
+
+                /* SEND ORDER TO FLASK */
+
+                const response =
+                    await fetch(
+                        "/api/orders",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    name: name,
+
+                                    phone: phone,
+
+                                    address: address,
+
+                                    pincode: pincode,
+
+                                    items: cart,
+
+                                    total: total
+
+                                })
+
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (
+                    result.success
+                ) {
+
+
+                    /* SUCCESS */
+
+                    localStorage.removeItem(
+                        "cart"
+                    );
+
+
+                    window.location.href =
+                        "order-success.html?order=" +
+                        result.order_id;
+
+
+                } else {
+
+
+                    alert(
+                        result.message ||
+                        "Unable to create order."
+                    );
+
+
+                    submitButton.disabled =
+                        false;
+
+
+                    submitButton.innerText =
+                        "Place Order";
+
+                }
+
+
+            } catch (error) {
+
+
+                console.error(error);
+
+
+                alert(
+                    "Could not connect to the server. Make sure Flask is running."
+                );
+
+
+                submitButton.disabled =
+                    false;
+
+
+                submitButton.innerText =
+                    "Place Order";
+
+            }
+
+        }
+    );
+
+
+</script>
+
+
+</body>
+
+</html>

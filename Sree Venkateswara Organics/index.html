@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sree Venkateshwara Organics</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <div class="logo">
+        🌱 Sree Venkateshwara Organics
+    </div>
+
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#products">Products</a>
+        <a href="#about">About</a>
+
+        <button class="cart-button" onclick="openCart()">
+            🛒 Cart <span id="cartCount">0</span>
+        </button>
+    </nav>
+</header>
+
+
+<section id="home" class="hero">
+
+    <div class="hero-content">
+
+        <h1>Natural Care for Better Crops</h1>
+
+        <p>
+            Organic pesticides, insecticides and fertilizers
+            for healthy and sustainable farming.
+        </p>
+
+        <a href="#products" class="shop-button">
+            Shop Now
+        </a>
+
+    </div>
+
+</section>
+
+
+<section id="products" class="products-section">
+
+    <h2>Our Products</h2>
+
+    <p class="section-text">
+        Explore our organic agricultural products.
+    </p>
+
+
+    <div class="category-buttons">
+
+        <button onclick="filterProducts('all')">
+            All
+        </button>
+
+        <button onclick="filterProducts('pesticide')">
+            Organic Pesticides
+        </button>
+
+        <button onclick="filterProducts('insecticide')">
+            Organic Insecticides
+        </button>
+
+        <button onclick="filterProducts('fertilizer')">
+            Organic Fertilizers
+        </button>
+
+    </div>
+
+
+    <div id="productContainer" class="product-container">
+
+
+        <!-- JEEVAMRUTHAM -->
+
+        <div class="product-card fertilizer">
+
+            <div class="product-image">
+                🌱
+            </div>
+
+            <h3>Jeevamrutham</h3>
+
+            <p>
+                Helps support healthy plant growth.
+            </p>
+
+            <h4>₹30 / litre</h4>
+
+            <button onclick="addToCart('Jeevamrutham', 30)">
+                Add to Cart
+            </button>
+
+        </div>
+
+
+        <!-- CHAPABELLA DHRAVANAM -->
+
+        <div class="product-card insecticide">
+
+            <div class="product-image">
+                🐛
+            </div>
+
+            <h3>Chapabella Dhravanam</h3>
+
+            <p>
+                Helps control harmful insects.
+            </p>
+
+            <h4>₹50 / litre</h4>
+
+            <button onclick="addToCart('Chapabella Dhravanam', 50)">
+                Add to Cart
+            </button>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<section id="about" class="about-section">
+
+    <h2>About Sree Venkateshwara Organics</h2>
+
+    <p>
+        Sree Venkateshwara Organics provides organic agricultural
+        products including fertilizers, pesticides and insecticides.
+        We aim to provide quality agricultural solutions for farmers.
+    </p>
+
+</section>
+
+
+<footer>
+
+    <h3>🌱 Sree Venkateshwara Organics</h3>
+
+    <p>Organic solutions for better farming.</p>
+
+    <p>© 2026 Sree Venkateshwara Organics</p>
+
+</footer>
+
+
+<!-- CART -->
+
+<div id="cartModal" class="cart-modal">
+
+    <div class="cart-box">
+
+        <button class="close-button" onclick="closeCart()">
+            ✕
+        </button>
+
+        <h2>🛒 Your Cart</h2>
+
+        <div id="cartItems"></div>
+
+        <h3>
+            Total: ₹<span id="cartTotal">0</span>
+        </h3>
+
+        <button class="checkout-button" onclick="checkout()">
+            Proceed to Checkout
+        </button>
+
+    </div>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
