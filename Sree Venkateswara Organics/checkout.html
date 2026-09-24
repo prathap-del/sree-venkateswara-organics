@@ -10,9 +10,9 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>
-        Checkout - Sree Venkateswara Organics
-    </title>
+    <title>Checkout - Sree Venkateswara Organics</title>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <style>
 
@@ -43,21 +43,16 @@
             width: 92%;
             max-width: 950px;
             margin: 40px auto;
-
             display: grid;
             grid-template-columns: 1fr 1fr;
-
             gap: 25px;
         }
 
         .box {
             background: white;
             padding: 25px;
-
             border-radius: 12px;
-
-            box-shadow:
-                0 4px 15px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         }
 
         .box h2 {
@@ -67,22 +62,17 @@
 
         label {
             display: block;
-
             margin-top: 15px;
             margin-bottom: 7px;
-
             font-weight: bold;
         }
 
         input,
         textarea {
             width: 100%;
-
             padding: 12px;
-
             border: 1px solid #ccc;
             border-radius: 6px;
-
             font-size: 15px;
         }
 
@@ -93,59 +83,42 @@
 
         .order-item {
             display: flex;
-
             justify-content: space-between;
-
             gap: 15px;
-
             padding: 14px 0;
-
             border-bottom: 1px solid #ddd;
         }
 
         .total {
             display: flex;
-
             justify-content: space-between;
-
             margin-top: 25px;
-
             font-size: 21px;
             font-weight: bold;
         }
 
         .payment {
             margin-top: 25px;
-
             padding: 15px;
-
             background: #f1f8f2;
-
             border-radius: 7px;
         }
 
         .payment p {
             margin-top: 8px;
-
             color: #555;
         }
 
         .place-order {
             width: 100%;
-
             margin-top: 25px;
-
             padding: 15px;
-
             border: none;
             border-radius: 7px;
-
             background: #176b35;
             color: white;
-
             font-size: 17px;
             font-weight: bold;
-
             cursor: pointer;
         }
 
@@ -153,40 +126,28 @@
             background: #0d4d24;
         }
 
+        .place-order:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .back {
             display: block;
-
             text-align: center;
-
             margin-top: 20px;
-
             color: #176b35;
-
             text-decoration: none;
-
             font-weight: bold;
         }
 
         .contact {
             text-align: center;
-
             margin: 20px;
-
             color: #555;
         }
 
         .contact strong {
             color: #176b35;
-        }
-
-        .message {
-            margin-top: 15px;
-
-            padding: 12px;
-
-            border-radius: 6px;
-
-            display: none;
         }
 
         @media (max-width: 700px) {
@@ -208,7 +169,6 @@
 
 <body>
 
-
 <header>
 
     <h1>
@@ -220,8 +180,6 @@
 
 <div class="container">
 
-
-    <!-- CUSTOMER DETAILS -->
 
     <div class="box">
 
@@ -291,8 +249,7 @@
                 </strong>
 
                 <p>
-                    Online payment will be connected
-                    after we finish testing the order system.
+                    Pay securely online using Razorpay.
                 </p>
 
             </div>
@@ -303,14 +260,8 @@
                 class="place-order"
                 id="submitButton"
             >
-                Place Order
+                Pay Now
             </button>
-
-
-            <div
-                id="message"
-                class="message"
-            ></div>
 
 
         </form>
@@ -325,8 +276,6 @@
 
     </div>
 
-
-    <!-- ORDER SUMMARY -->
 
     <div class="box">
 
@@ -370,11 +319,6 @@
 
 <script>
 
-
-/* ============================
-   GET CART
-============================ */
-
 const cart =
     JSON.parse(
         localStorage.getItem("cart")
@@ -382,50 +326,26 @@ const cart =
 
 
 const orderItems =
-    document.getElementById(
-        "orderItems"
-    );
-
+    document.getElementById("orderItems");
 
 const orderTotal =
-    document.getElementById(
-        "orderTotal"
-    );
-
-
-const message =
-    document.getElementById(
-        "message"
-    );
-
+    document.getElementById("orderTotal");
 
 const submitButton =
-    document.getElementById(
-        "submitButton"
-    );
-
+    document.getElementById("submitButton");
 
 let total = 0;
 
 
-/* ============================
-   DISPLAY CART
-============================ */
-
 if (cart.length === 0) {
 
     orderItems.innerHTML = `
-        <p>
-            Your cart is empty.
-        </p>
+        <p>Your cart is empty.</p>
     `;
 
     submitButton.disabled = true;
 
-    submitButton.style.opacity = "0.5";
-
 } else {
-
 
     cart.forEach(function(product) {
 
@@ -433,16 +353,13 @@ if (cart.length === 0) {
             Number(product.price) *
             Number(product.quantity);
 
-
         total += productTotal;
-
 
         orderItems.innerHTML += `
 
             <div class="order-item">
 
                 <div>
-
                     <strong>
                         ${product.name}
                     </strong>
@@ -451,217 +368,321 @@ if (cart.length === 0) {
 
                     Quantity:
                     ${product.quantity}
-
                 </div>
 
-
                 <strong>
-
                     ₹${productTotal}
-
                 </strong>
 
             </div>
-
         `;
 
     });
 
 }
 
-
 orderTotal.innerText = total;
 
 
 /* ============================
-   CHECKOUT
+   SUBMIT CHECKOUT
 ============================ */
 
 document
     .getElementById("checkoutForm")
-    .addEventListener(
-        "submit",
-        async function(event) {
+    .addEventListener("submit", async function(event) {
 
-            event.preventDefault();
+        event.preventDefault();
+
+        if (cart.length === 0) {
+
+            alert("Your cart is empty.");
+
+            return;
+        }
 
 
-            if (cart.length === 0) {
+        const name =
+            document.getElementById("name")
+                .value
+                .trim();
 
-                alert(
-                    "Your cart is empty."
+        const phone =
+            document.getElementById("phone")
+                .value
+                .trim();
+
+        const address =
+            document.getElementById("address")
+                .value
+                .trim();
+
+        const pincode =
+            document.getElementById("pincode")
+                .value
+                .trim();
+
+
+        if (!/^[0-9]{10}$/.test(phone)) {
+
+            alert(
+                "Please enter a valid 10-digit mobile number."
+            );
+
+            return;
+        }
+
+
+        if (!/^[0-9]{6}$/.test(pincode)) {
+
+            alert(
+                "Please enter a valid pincode."
+            );
+
+            return;
+        }
+
+
+        submitButton.disabled = true;
+
+        submitButton.innerText =
+            "Opening Payment...";
+
+
+        try {
+
+            /* CREATE RAZORPAY ORDER */
+
+            const response =
+                await fetch(
+                    "/api/create-payment-order",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            name: name,
+
+                            phone: phone,
+
+                            address: address,
+
+                            pincode: pincode,
+
+                            items: cart,
+
+                            total: total
+
+                        })
+                    }
                 );
 
-                return;
 
+            const result =
+                await response.json();
+
+
+            if (!response.ok || !result.success) {
+
+                throw new Error(
+                    result.message ||
+                    "Unable to create payment order."
+                );
             }
 
 
-            const name =
-                document
-                    .getElementById("name")
-                    .value
-                    .trim();
+            /* OPEN RAZORPAY */
+
+            const options = {
+
+                key: result.key_id,
+
+                amount: result.amount,
+
+                currency: result.currency,
+
+                name: "Sree Venkateswara Organics",
+
+                description:
+                    "Organic agricultural products",
+
+                order_id:
+                    result.razorpay_order_id,
+
+                prefill: {
+
+                    name: name,
+
+                    contact: phone
+
+                },
+
+                notes: {
+
+                    address: address
+
+                },
 
 
-            const phone =
-                document
-                    .getElementById("phone")
-                    .value
-                    .trim();
+                handler: async function(payment) {
+
+                    submitButton.innerText =
+                        "Verifying Payment...";
 
 
-            const address =
-                document
-                    .getElementById("address")
-                    .value
-                    .trim();
+                    try {
+
+                        const verifyResponse =
+                            await fetch(
+                                "/api/verify-payment",
+                                {
+
+                                    method: "POST",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json"
+                                    },
+
+                                    body:
+                                        JSON.stringify({
+
+                                            local_order_id:
+                                                result.local_order_id,
+
+                                            razorpay_order_id:
+                                                payment.razorpay_order_id,
+
+                                            razorpay_payment_id:
+                                                payment.razorpay_payment_id,
+
+                                            razorpay_signature:
+                                                payment.razorpay_signature
+
+                                        })
+
+                                }
+                            );
 
 
-            const pincode =
-                document
-                    .getElementById("pincode")
-                    .value
-                    .trim();
+                        const verifyResult =
+                            await verifyResponse.json();
 
 
-            /* VALIDATION */
+                        if (
+                            verifyResponse.ok &&
+                            verifyResult.success
+                        ) {
 
-            if (
-                !/^[0-9]{10}$/.test(phone)
-            ) {
-
-                alert(
-                    "Please enter a valid 10-digit mobile number."
-                );
-
-                return;
-
-            }
+                            localStorage.removeItem(
+                                "cart"
+                            );
 
 
-            if (
-                !/^[0-9]{6}$/.test(pincode)
-            ) {
+                            window.location.href =
+                                "order-success.html?order=" +
+                                result.local_order_id;
 
-                alert(
-                    "Please enter a valid 6-digit pincode."
-                );
+                        } else {
 
-                return;
+                            alert(
+                                verifyResult.message ||
+                                "Payment verification failed."
+                            );
 
-            }
+                            submitButton.disabled =
+                                false;
 
-
-            /* DISABLE BUTTON */
-
-            submitButton.disabled = true;
-
-            submitButton.innerText =
-                "Saving Order...";
-
-
-            try {
-
-
-                /* SEND ORDER TO FLASK */
-
-                const response =
-                    await fetch(
-                        "/api/orders",
-                        {
-
-                            method: "POST",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body:
-                                JSON.stringify({
-
-                                    name: name,
-
-                                    phone: phone,
-
-                                    address: address,
-
-                                    pincode: pincode,
-
-                                    items: cart,
-
-                                    total: total
-
-                                })
-
+                            submitButton.innerText =
+                                "Pay Now";
                         }
+
+                    } catch (error) {
+
+                        console.error(error);
+
+                        alert(
+                            "Payment completed, but verification could not be completed. Please contact 6300857062."
+                        );
+
+                        submitButton.disabled =
+                            false;
+
+                        submitButton.innerText =
+                            "Pay Now";
+                    }
+
+                },
+
+
+                modal: {
+
+                    ondismiss: function() {
+
+                        submitButton.disabled =
+                            false;
+
+                        submitButton.innerText =
+                            "Pay Now";
+                    }
+
+                }
+
+            };
+
+
+            const razorpay =
+                new Razorpay(options);
+
+
+            razorpay.on(
+                "payment.failed",
+                function(response) {
+
+                    console.error(
+                        "Payment failed:",
+                        response.error
                     );
-
-
-                const result =
-                    await response.json();
-
-
-                if (
-                    result.success
-                ) {
-
-
-                    /* SUCCESS */
-
-                    localStorage.removeItem(
-                        "cart"
-                    );
-
-
-                    window.location.href =
-                        "order-success.html?order=" +
-                        result.order_id;
-
-
-                } else {
-
 
                     alert(
-                        result.message ||
-                        "Unable to create order."
+                        response.error.description ||
+                        "Payment failed. Please try again."
                     );
-
 
                     submitButton.disabled =
                         false;
 
-
                     submitButton.innerText =
-                        "Place Order";
-
+                        "Pay Now";
                 }
+            );
 
 
-            } catch (error) {
+            razorpay.open();
 
 
-                console.error(error);
+        } catch (error) {
 
+            console.error(error);
 
-                alert(
-                    "Could not connect to the server. Make sure Flask is running."
-                );
+            alert(
+                error.message ||
+                "Could not connect to the server."
+            );
 
+            submitButton.disabled =
+                false;
 
-                submitButton.disabled =
-                    false;
-
-
-                submitButton.innerText =
-                    "Place Order";
-
-            }
-
+            submitButton.innerText =
+                "Pay Now";
         }
-    );
 
+    });
 
 </script>
 
